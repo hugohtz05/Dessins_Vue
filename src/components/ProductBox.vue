@@ -13,13 +13,14 @@
 
 <script>
 export default {
+    name: 'ProductBox',
     props: {
-        product: Object,
+        product: Object
     }
 }
 </script>
 
-<style>
+<style scoped>
 .image {
     margin-top: -1.25rem;
     margin-left: -1.25rem;

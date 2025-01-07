@@ -1,5 +1,5 @@
 <template>
-    <div class="home is-white">
+    <div class="home">
         <section class="hero is-medium is-white mb-6">
             <div class="hero-body has-text-centered">
                 <p class="title mb-6">
@@ -17,18 +17,17 @@
                     Mes nouveaux dessins
                 </h2>
             </div>
-
             <ProductBox
                 v-for="product in latestProducts"
-                :key="product.id"
-                :product="product" />
+                v-bind:key="product.id"
+                v-bind:product="product" />
         </div>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
-import ProductBox from '@/components/ProductBox.vue';
+import ProductBox from '@/components/ProductBox';
 
 export default {
   name: 'Home',
@@ -39,8 +38,6 @@ export default {
     return {
         latestProducts: []
     }
-  },
-  components: {
   },
   mounted() {
     this.getLatestProducts()

@@ -16,7 +16,7 @@
 import axios from 'axios';
 import { toast } from 'bulma-toast';
 
-import ProductBox from '@/components/ProductBox.vue';
+import ProductBox from '@/components/ProductBox';
 
 export default {
     name: 'category',
