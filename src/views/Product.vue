@@ -28,39 +28,39 @@
 </template>
 
 <script>
-import axios from 'axios'
-import { toast } from 'bulma-toast'
+import axios from 'axios';
+import { toast } from 'bulma-toast';
 
 export default {
     name: 'Product',
     data() {
         return {
             product: {},
-            quantity: 1
-        }
+            quantity: 1,
+        };
     },
     mounted() {
-        this.getProduct()
+        this.getProduct();
     },
     methods: {
         async getProduct() {
-            this.$store.commit('setIsLoading', true)
+            this.$store.commit('setIsLoading', true);
 
-            const category_slug = this.$route.params.category_slug
-            const product_slug = this.$route.params.product_slug
+            const category_slug = this.$route.params.category_slug;
+            const product_slug = this.$route.params.product_slug;
 
             await axios
                 .get(`/api/v1/products/${category_slug}/${product_slug}/`)
                 .then(response => {
-                    this.product = response.data
+                    this.product = response.data;
 
-                    document.title = this.product.name + " | Dessins d'ici et d'ailleurs"
+                    document.title = this.product.name + " | Dessins d'ici et d'ailleurs";
                 })
                 .catch(error => {
-                    console.log(error)
+                    console.log(error);
                 })
 
-                this.$store.commit('setIsLoading', false)
+                this.$store.commit('setIsLoading', false);
         },
         addToCart() {
             if (isNaN(this.quantity) || this.quantity < 1) {
@@ -69,10 +69,10 @@ export default {
 
             const item = {
                 product: this.product,
-                quantity: this.quantity
-            }
+                quantity: this.quantity,
+            };
 
-            this.$store.commit('addToCart', item)
+            this.$store.commit('addToCart', item);
 
             toast({
                 message: "L'article a été ajouté à votre panier!",
@@ -81,9 +81,9 @@ export default {
                 pauseOnHover: true,
                 duration: 2000,
                 position: 'bottom-right',
-            })
+            });
         }
     }
-}
+};
 
 </script>

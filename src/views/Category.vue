@@ -21,23 +21,30 @@ import ProductBox from '@/components/ProductBox';
 export default {
     name: 'category',
     components: {
-        ProductBox
+        ProductBox,
     },
     data() {
         return {
             category: {
-                products: []
+                products: [],
+            }
+        };
+    },
+    mounted() {
+        this.getCategory();
+    },
+    watch: {
+        $route(to, from) {
+            if (to.name === 'Category') {
+                this.getCategory();
             }
         }
     },
-    mounted() {
-        this.getCategory()
-    },
     methods: {
         async getCategory() {
-            const categorySlug = this.$route.params.category_slug
+            const categorySlug = this.$route.params.category_slug;
 
-            this.$store.commit('setIsLoading', true)
+            this.$store.commit('setIsLoading', true);
 
             axios
                 .get(`/api/v1/products/${categorySlug}/`)
@@ -47,7 +54,7 @@ export default {
                     document.title = this.category.name + " | Dessins d'ici et d'ailleurs"
                 })
                 .catch(error => {
-                    console.log(error)
+                    console.log(error);
 
                     toast({
                         message: "Une erreur est survenue. Veuillez essayer une nouvelle fois",
@@ -56,11 +63,11 @@ export default {
                         pauseOnHover: true,
                         duration: 2000,
                         position: 'bottom-right',
-                    })
+                    });
                 })
 
-            this.$store.commit('setIsLoading', false)
+            this.$store.commit('setIsLoading', false);
         }
     }
-}
+};
 </script>

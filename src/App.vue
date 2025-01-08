@@ -11,12 +11,30 @@
 				</a>
 			</div>
 			<div class="navbar-menu" id="navbar-menu" v-bind:class="{'is-active': showMobileMenu }">
+				<div class="navbar-start">
+					<div class="navbar-item">
+						<form method="get" action="/search">
+							<div class="field has-addons">
+								<div class="control">
+									<input type="text" class="input" placeholder="Que cherchez-vous ?" name="query">
+								</div>
+								<div class="control">
+									<button class="button is-success">
+										<span class="icon">
+										<i class="fas fa-search"></i>
+										</span>
+									</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
 				<div class="navbar-end">
 					<router-link to="/a4" class="navbar-item has-text-dark">Format A4</router-link>
 					<router-link to="/postal-card" class="navbar-item has-text-dark">Carte postale</router-link>
 					<router-link to="/login" class="navbar-item has-text-dark">
 						<span class="icon"><i class="fas fa-user"></i></span>
-						<span>Connexion</span>
+						<span>Se connecter</span>
 					</router-link>
 					<router-link to="/cart" class="navbar-item has-text-dark">
 						<span class="icon"><i class="fas fa-shopping-cart"></i></span>
@@ -30,7 +48,7 @@
 			<div class="lds-dual-ring"></div>
 		</div>
 
-		<section class="section">
+		<section class="section has-background-white">
 			<router-view/>
 		</section>
 
@@ -41,34 +59,44 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
 	data() {
 		return {
 			showMobileMenu: false,
 			cart: {
-				items: []
+				items: [],
 			}
 		}
 	},
 	beforeCreate() {
-		this.$store.commit('initializeStore')
+		this.$store.commit('initializeStore');
+
+		const token = this.$store.token;
+
+		if (token) {
+			axios.defaults.headers.common['Authorization'] = "Token " + token;
+		} else {
+			axios.defaults.headers.common['Authorization'] = '';
+		}
 	},
 	mounted() {
-		this.cart = this.$store.state.cart
+		this.cart = this.$store.state.cart;
 	},
 	computed: {
 		cartTotalLength() {
-			let totalLength = 0
+			let totalLength = 0;
 
 			for (let i = 0; i < this.cart.items.length; i++) {
-				totalLength += this.cart.items[i].quantity
+				totalLength += this.cart.items[i].quantity;
 			}
 			if (totalLength > 0) {
-				return `(${totalLength})`
+				return `(${totalLength})`;
 			}
 		}
 	}
-}
+};
 </script>
 
 <style lang="scss">

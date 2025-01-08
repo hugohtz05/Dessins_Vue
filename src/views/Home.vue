@@ -1,8 +1,8 @@
 <template>
     <div class="home">
-        <section class="hero is-medium is-white mb-6">
+        <section class="hero is-medium mb-6">
             <div class="hero-body has-text-centered">
-                <p class="title mb-6">
+                <p class="title mb-6 has-text-dark">
                     Bienvenue à Dessins d'ici et d'ailleurs
                 </p>
                 <p class="subtitle">

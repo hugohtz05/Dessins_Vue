@@ -1,10 +1,11 @@
 <template>
-    <div class="columun is-3 ml-2">
+    <div class="columun is-3 ml-4">
         <div class="box">
             <figure class="image mb-4">
                 <img :src="product.get_thumbnail">
             </figure>
             <h3 class="is-size-4">{{ product.name }}</h3>
+            <p class="is-size-7">{{ product.category_name }}</p>
             <div class="is-size-6 has-text-grey">{{ product.price }}€</div>
             <router-link v-bind:to="product.get_absolute_url" class="button is-dark mt-4">Voir le dessin</router-link>
         </div>
