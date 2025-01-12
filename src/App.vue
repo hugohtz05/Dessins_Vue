@@ -32,14 +32,24 @@
 				<div class="navbar-end">
 					<router-link to="/a4" class="navbar-item has-text-dark">Format A4</router-link>
 					<router-link to="/postal-card" class="navbar-item has-text-dark">Carte postale</router-link>
-					<router-link to="/login" class="navbar-item has-text-dark">
-						<span class="icon"><i class="fas fa-user"></i></span>
-						<span>Se connecter</span>
-					</router-link>
-					<router-link to="/cart" class="navbar-item has-text-dark">
-						<span class="icon"><i class="fas fa-shopping-cart"></i></span>
-						<span>Panier {{ cartTotalLength }}</span>
-					</router-link>
+					<div class="buttons">
+						<template v-if="$store.state.isAuthenticated">
+							<router-link to="/my-account" class="navbar-item has-text-dark">
+								<span class="icon"><i class="fas fa-user"></i></span>
+								<span>Mon espace</span>
+							</router-link>
+						</template>
+						<template v-else>
+							<router-link to="/login" class="navbar-item has-text-dark">
+								<span class="icon"><i class="fas fa-user"></i></span>
+								<span>Se connecter</span>
+							</router-link>
+						</template>
+						<router-link to="/cart" class="navbar-item has-text-dark">
+							<span class="icon"><i class="fas fa-shopping-cart"></i></span>
+							<span>Panier {{ cartTotalLength }}</span>
+						</router-link>
+					</div>
 				</div>
 			</div>
 		</nav>

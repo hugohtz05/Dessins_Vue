@@ -33,7 +33,7 @@
 
                 <hr>
 
-                <router-link to="/cart/checkout" class="button is-dark">Procéder au paiement</router-link>
+                <router-link to="/checkout" class="button is-dark">Commander</router-link>
             </div>
         </div>
     </div>
@@ -69,12 +69,12 @@ export default {
     computed: {
         cartTotalLength() {
             return this.cart.items.reduce((acc, curVal) => {
-                return acc += curVal.quantity;
+                return acc += curVal.quantity
             }, 0);
         },
         cartTotalPrice() {
             return this.cart.items.reduce((acc, curVal) => {
-                return acc += curVal.product.price * curVal.quantity;
+                return acc += curVal.product.price * curVal.quantity
             }, 0);
         }
     }
