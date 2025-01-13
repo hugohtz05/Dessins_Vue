@@ -134,6 +134,14 @@ export default {
         document.title = "Commande | Dessins d'ici et d'ailleurs";
 
         this.cart = this.$store.state.cart;
+
+        if (this.cartTotalLength > 0) {
+            this.stripe = Stripe();
+            const elements = this.stripe.elements();
+            this.card = elements.create('card', { hidePostalCode: true});
+
+            this.card.mount('#card-element');
+        }
     },
     methods: {
         getItemTotal(item) {
@@ -170,6 +178,57 @@ export default {
                 this.errors.push("Vous n'avez pas renseigné votre ville");
             }
 
+            if (this.errors.length) {
+                this.$store.commit('setIsLoading', true);
+
+                this.stripe.createToken(this.card).then(result => {
+                    if (result.error) {
+                        this.$store.commit('setIsLoading', false);
+
+                        this.errors.push('Une erreur est survenue. Veuillez réessayer');
+                    } else {
+                        this.stripeTokenHandler(result.token);
+                    }
+                })
+            }
+        },
+        async stripeTokenHandler(token) {
+            const items = [];
+
+            for (let i = 0; i < this.cart.items.length; i++) {
+                const item = this.cart.items[i];
+                const obj = {
+                    product: item.product.id,
+                    quantity: item.quantity,
+                    price: item.product.price * item.quantity
+                };
+
+                items.push(obj);
+            }
+
+            const data = {
+                'first_name': this.first_name,
+                'last_name': this.last_name,
+                'email': this.email,
+                'address': this.address,
+                'zipcode': this.zipcode,
+                'place': this.place,
+                'phone': this.phone,
+                'items': items,
+                'stripe_token': token.id
+            };
+
+            await axios
+                .post('api/v1/checkout/', data)
+                .then(response => {
+                    this.$store.commit('clearCart')
+                    this.$store.push('/cart/success')
+                })
+                .catch(errors => {
+                    this.errors.push('Une erreur est survenue. Veuillez réessayer')
+                })
+
+                this.$store.commit('setIsLoading', false)
         }
     },
     computed: {
