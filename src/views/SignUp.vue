@@ -11,14 +11,21 @@
                             <input id="email" ref="emailInput" type="text" class="input has-background-white has-text-dark" v-model="username">
                         </div>
                     </div>
-                    
+
                     <div class="field">
-                        <label for="username">Nom d'utilisateur</label>
+                        <label>Prénom*</label>
                         <div class="control">
-                            <input id="username" type="text" class="input has-background-white has-text-dark" v-model="username">
+                            <input type="text" class="input has-background-white has-text-dark" v-model="first_name">
                         </div>
                     </div>
 
+                    <div class="field">
+                        <label>Nom*</label>
+                        <div class="control">
+                            <input type="text" class="input has-background-white has-text-dark" v-model="last_name">
+                        </div>
+                    </div>
+                    
                     <div class="field">
                         <label for="password">Mot de passe</label>
                         <div class="control">
@@ -27,9 +34,9 @@
                     </div>
 
                     <div class="field">
-                        <label for="password2">Confirmation du mot de passe</label>
+                        <label for="re_password">Confirmation du mot de passe</label>
                         <div class="control">
-                            <input id="password2" type="password" class="input has-background-white has-text-dark" v-model="password2">
+                            <input id="re_password" type="password" class="input has-background-white has-text-dark" v-model="re_password">
                         </div>
                     </div>
 
@@ -61,9 +68,10 @@ export default {
     data () {
         return {
             email: '',
-            username: '',
+            first_name: '',
+            last_name: '',
             password: '',
-            password2: '',
+            re_password: '',
             errors: [],
             isSubmitting: false,
         }
@@ -81,28 +89,34 @@ export default {
             if (!/\S+@\S+\.\S+/.test(this.email)) {
                 this.errors.push("Veuillez entrer une adresse mail valide");
             }
+            
+            if (this.first_name === '') {
+                this.errors.push("Vous n'avez pas renseigné votre prénom");
+            }
 
-            if (this.username === '') {
-                this.errors.push("Vous avez oublié le nom d'utilisateur");
+            if (this.last_name === '') {
+                this.errors.push("Vous n'avez pas renseigné votre nom");
             }
 
             if (this.password.length < 8) {
                 this.errors.push("Votre mot de passe doit contenir au moins 8 charactères");
             }
 
-            if (this.password2 !== this.password) {
+            if (this.re_password !== this.password) {
                 this.errors.push("Vos mots de passe ne correspondent pas");
             }
 
             if (!this.errors.length) {
                 const formData = {
+                    first_name: this.first_name,
+                    last_name: this.last_name,
                     email: this.email,
-                    username: this.username,
-                    password: this.password
+                    password: this.password,
+                    re_password: this.re_password,
                 };
 
                 axios
-                    .post("/api/v1/users/", formData)
+                    .post("/auth/users/", formData)
                     .then(response => {
                         toast({
                             message: "Votre compte a été créé, vous pouvez vous connecter",
@@ -118,7 +132,7 @@ export default {
                     .catch(error => {
                         if (error.response) {
                             for (const property in error.response.data) {
-                                this.errors.push(`${property}: ${error.response.data[property]}`);
+                                this.errors.push(`${error.response.data[property]}`);
                             }
                         } else if (error.message) {
                             this.errors.push("Une erreur est survenue. Veuillez réessayer");

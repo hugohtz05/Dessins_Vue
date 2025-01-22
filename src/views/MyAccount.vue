@@ -15,7 +15,7 @@
 
                 <OrderSummary
                     v-for="order in orders"
-                    v-bind:key="order.id"
+                    v-bind:key="order.order_id"
                     v-bind:order="order" />
             </div>
         </div>
@@ -42,14 +42,8 @@ export default {
         this.getMyOrders();
     },
     methods: {
-        logout() {
-            axios.defaults.headers.common["Authorization"] = "";
-
-            localStorage.removeItem("token");
-            localStorage.removeItem("username");
-            localStorage.removeItem("userid");
-
-            this.$route.commit('removeToken');
+        async logout() {
+            await axios.post('/logout/')
 
             this.$router.push('/');
         },
@@ -57,9 +51,10 @@ export default {
             this.$store.commit('setIsLoading', true);
 
             await axios
-                .get('/api/v1/orders/')
+                .get('/orders/')
                 .then(response => {
                     this.orders = response.data
+                    console.log(response.data)
                 })
             this.$store.commit('setIsLoading', false);
         }

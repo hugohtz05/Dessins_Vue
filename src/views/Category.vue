@@ -43,15 +43,15 @@ export default {
     methods: {
         async getCategory() {
             const categorySlug = this.$route.params.category_slug;
-
+            
             this.$store.commit('setIsLoading', true);
-
+            
             axios
-                .get(`/api/v1/products/${categorySlug}/`)
-                .then(response => {
-                    this.category = response.data
-
-                    document.title = this.category.name + " | Dessins d'ici et d'ailleurs"
+            .get(`/products/${categorySlug}/`)
+            .then(response => {
+                this.category = response.data;
+                
+                document.title = this.category.name + " | Dessins d'ici et d'ailleurs";
                 })
                 .catch(error => {
                     console.log(error);

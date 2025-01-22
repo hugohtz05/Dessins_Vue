@@ -49,7 +49,7 @@ export default {
         this.$store.commit('setIsLoading', true)
 
         await axios
-            .get('/api/v1/latest-product/')
+            .get('/latest-product/')
             .then(response => {
                 this.latestProducts = response.data
             })

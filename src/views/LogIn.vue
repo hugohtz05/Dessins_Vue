@@ -6,9 +6,9 @@
 
                 <form @submit.prevent="submitForm">
                     <div class="field">
-                        <label>Nom d'utilisateur</label>
+                        <label>Adresse mail</label>
                         <div class="control">
-                            <input type="text" class="input has-background-white has-text-dark" v-model="username">
+                            <input type="text" class="input has-background-white has-text-dark" v-model="email">
                         </div>
                     </div>
 
@@ -44,7 +44,7 @@ export default {
     name: 'LogIn',
     data() {
         return {
-            username: '',
+            email: '',
             password: '',
             errors: [],
         }
@@ -54,39 +54,23 @@ export default {
     },
     methods: {
         async submitForm() {
-            axios.defaults.headers.common['Authorization'] = '';
-
-            localStorage.removeItem("token");
+            this.errors = [];
 
             const formData = {
-                username: this.username,
+                email: this.email,
                 password: this.password
             };
 
-            await axios
-                .post("/api/v1/token/login/", formData)
-                .then(response => {
-                    const token = response.data.auth_token;
+            try {
+                await axios.post("/jwt/create/", formData);
 
-                    this.$store.commit('setToken', token);
+                this.$store.commit('setIsAuthenticated', true);
 
-                    axios.defaults.headers.common['Authorization'] = "Token " + token;
-
-                    localStorage.setItem("token", token);
-
-                    const toPath = this.$route.query.to || '/cart';
-
-                    this.$router.push(toPath);
-                })
-                .catch(error => {
-                    if (error.response) {
-                        for (const property in error.response.data) {
-                            this.error.push(`${property}: ${error.response.data[property]}`);
-                        }
-                    } else if (error.message) {
-                        this.error.push("Une erreur est survenue. Veuillez réessayer");
-                    }
-                })
+                const toPath = this.$route.query.to || '/cart';
+                this.$router.push(toPath);
+            } catch (error) {
+                this.errors.push("Une erreur est survenue. Veuillez réessayer");
+            }
         },
     },
 };

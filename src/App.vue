@@ -72,6 +72,7 @@
 import axios from 'axios';
 
 export default {
+	name: 'App',
 	data() {
 		return {
 			showMobileMenu: false,
@@ -80,18 +81,8 @@ export default {
 			}
 		}
 	},
-	beforeCreate() {
-		this.$store.commit('initializeStore');
-
-		const token = this.$store.token;
-
-		if (token) {
-			axios.defaults.headers.common['Authorization'] = "Token " + token;
-		} else {
-			axios.defaults.headers.common['Authorization'] = '';
-		}
-	},
 	mounted() {
+		this.$store.commit('initializeStore');
 		this.cart = this.$store.state.cart;
 	},
 	computed: {

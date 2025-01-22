@@ -5,13 +5,11 @@
                 <figure class="image mb-6">
                     <img :src="product.get_image">
                 </figure>
-
-                <h1 class="title">{{ product.name }}</h1>
-                <p>{{ product.description }}</p>
             </div>
 
             <div class="column is-3">
-                <h2 class="subtitle">Information</h2>
+                <h1 class="title">{{ product.name }}</h1>
+                <p>{{ product.description }}</p>
                 <p><strong>Prix: </strong>{{ product.price }}€</p>
 
                 <div class="field has-addons mt-6">
@@ -45,19 +43,16 @@ export default {
     methods: {
         async getProduct() {
             this.$store.commit('setIsLoading', true);
-
+            
             const category_slug = this.$route.params.category_slug;
             const product_slug = this.$route.params.product_slug;
-
+            
             await axios
-                .get(`/api/v1/products/${category_slug}/${product_slug}/`)
+                .get(`/products/${category_slug}/${product_slug}/`)
                 .then(response => {
                     this.product = response.data;
 
                     document.title = this.product.name + " | Dessins d'ici et d'ailleurs";
-                })
-                .catch(error => {
-                    console.log(error);
                 })
 
                 this.$store.commit('setIsLoading', false);

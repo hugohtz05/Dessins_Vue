@@ -44,22 +44,20 @@ export default {
     },
     methods: {
         async performSearch() {
-            const categorySlug = this.$route.params.category_slug;
 
             this.$store.commit('setIsLoading', true);
 
-            axios
-                .post('/api/v1/products/search/', {'query': this.query})
+            await axios
+                .get('/products/', {params: {'search': this.query},})
                 .then(response => {
-                    this.products = response.data
-
+                    this.products = response.data['results']
                 })
                 .catch(error => {
                     console.log(error);
                 })
             
             this.$store.commit('setIsLoading', false);
-        }
+        },
     }
 };
 </script>

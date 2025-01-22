@@ -37,7 +37,7 @@ const routes = [
   },
   {
     path: '/search',
-    name: 'Seacrh',
+    name: 'Search',
     component: Search
   },
   {

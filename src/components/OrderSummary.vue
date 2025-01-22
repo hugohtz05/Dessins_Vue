@@ -1,6 +1,6 @@
 <template>
     <div class="box mb-4">
-        <h3 class="is-size-4 mb-6">Commande #{{ order.id }}</h3>
+        <h3 class="is-size-4 mb-6">Commande #{{ order.order_id }}</h3>
         <h4 class="is-size-5">Produits</h4>
 
         <table class="table is-fullwidth">
@@ -40,7 +40,7 @@ export default {
         },
         orderTotalLength(order) {
             return order.items.reduce((acc, curVal) => {
-                return acc += curVal.quantity;
+                return acc += curVal.quantity
             }, 0)
         },
     }
