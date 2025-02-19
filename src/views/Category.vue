@@ -54,7 +54,6 @@ export default {
                 document.title = this.category.name + " | Dessins d'ici et d'ailleurs";
                 })
                 .catch(error => {
-                    console.log(error);
 
                     toast({
                         message: "Une erreur est survenue. Veuillez essayer une nouvelle fois",

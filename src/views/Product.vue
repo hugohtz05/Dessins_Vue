@@ -3,7 +3,7 @@
         <div class="columns is-multiline">
             <div class="column is-7">
                 <figure class="image mb-6">
-                    <img :src="product.get_image">
+                    <img :src="product.image" alt="{{ product.name }}">
                 </figure>
             </div>
 

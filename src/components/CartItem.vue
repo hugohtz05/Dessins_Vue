@@ -3,8 +3,12 @@
         <td><router-link :to="item.product.get_absolute_url">{{ item.product.name }}</router-link></td>
         <td>{{ item.product.price }}€</td>
         <td>{{ item.quantity }}
-            <a @click="decrementQuantity(item)">-</a>
-            <a @click="incrementQuantity(item)">+</a>
+            <span @click="decrementQuantity(item)" class="icon">
+                <i class="fas fa-minus"></i>
+            </span>
+            <span @click="incrementQuantity(item)" class="icon">
+                <i class="fas fa-plus"></i>
+            </span>
         </td>
         <td>{{ getItemTotal(item).toFixed(2) }}€</td>
         <td><button class="delete" @click="removeFromCart(item)"></button></td>

@@ -2,41 +2,41 @@
     <div class="page-sign-up">
         <div class="columns">
             <div class="column is-4 is-offset-4">
-                <h1 class="title has-text-dark">Inscription</h1>
+                <h1 class="title">Inscription</h1>
 
                 <form @submit.prevent="submitForm">
                     <div class="field">
                         <label for="email">Adresse mail</label>
                         <div class="control">
-                            <input id="email" ref="emailInput" type="text" class="input has-background-white has-text-dark" v-model="username">
+                            <input id="email" ref="emailInput" type="text" class="input" v-model="username">
                         </div>
                     </div>
 
                     <div class="field">
                         <label>Prénom*</label>
                         <div class="control">
-                            <input type="text" class="input has-background-white has-text-dark" v-model="first_name">
+                            <input type="text" class="input" v-model="first_name">
                         </div>
                     </div>
 
                     <div class="field">
                         <label>Nom*</label>
                         <div class="control">
-                            <input type="text" class="input has-background-white has-text-dark" v-model="last_name">
+                            <input type="text" class="input" v-model="last_name">
                         </div>
                     </div>
                     
                     <div class="field">
                         <label for="password">Mot de passe</label>
                         <div class="control">
-                            <input id="password" type="password" class="input has-background-white has-text-dark" v-model="password">
+                            <input id="password" type="password" class="input" v-model="password">
                         </div>
                     </div>
 
                     <div class="field">
                         <label for="re_password">Confirmation du mot de passe</label>
                         <div class="control">
-                            <input id="re_password" type="password" class="input has-background-white has-text-dark" v-model="re_password">
+                            <input id="re_password" type="password" class="input" v-model="re_password">
                         </div>
                     </div>
 

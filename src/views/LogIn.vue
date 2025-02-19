@@ -2,20 +2,20 @@
     <div class="page-login">
         <div class="columns">
             <div class="column is-4 is-offset-4">
-                <h1 class="title has-text-dark">Connexion</h1>
+                <h1 class="title">Connexion</h1>
 
                 <form @submit.prevent="submitForm">
                     <div class="field">
                         <label>Adresse mail</label>
                         <div class="control">
-                            <input type="text" class="input has-background-white has-text-dark" v-model="email">
+                            <input type="text" class="input" v-model="email">
                         </div>
                     </div>
 
                     <div class="field">
                         <label>Mot de passe</label>
                         <div class="control">
-                            <input type="password" class="input has-background-white has-text-dark" v-model="password">
+                            <input type="password" class="input" v-model="password">
                         </div>
                     </div>
                     

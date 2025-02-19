@@ -2,7 +2,7 @@
     <div class="home">
         <section class="hero is-medium mb-6">
             <div class="hero-body has-text-centered">
-                <p class="title mb-6 has-text-dark">
+                <p class="title mb-6">
                     Bienvenue à Dessins d'ici et d'ailleurs
                 </p>
                 <p class="subtitle">

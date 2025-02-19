@@ -2,7 +2,7 @@
 	<div id="wrapper">
 		<nav class="navbar has-background-white">
 			<div class="navbar-brand">
-				<router-link to="/" class="navbar-item brand has-text-dark"><strong>Dessins d'ici et d'ailleurs</strong></router-link>
+				<router-link to="/" class="navbar-item brand"><strong>Dessins d'ici et d'ailleurs</strong></router-link>
 
 				<a class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar-menu" @click="showMobileMenu = !showMobileMenu">
 					<span aria-hidden="true"></span>
@@ -10,7 +10,7 @@
 					<span aria-hidden="true"></span>
 				</a>
 			</div>
-			<div class="navbar-menu" id="navbar-menu" v-bind:class="{'is-active': showMobileMenu }">
+			<div class="navbar-menu has-background-white" id="navbar-menu" v-bind:class="{'is-active': showMobileMenu }" ref="navbarMenu">
 				<div class="navbar-start">
 					<div class="navbar-item">
 						<form method="get" action="/search">
@@ -30,26 +30,25 @@
 					</div>
 				</div>
 				<div class="navbar-end">
-					<router-link to="/a4" class="navbar-item has-text-dark">Format A4</router-link>
-					<router-link to="/postal-card" class="navbar-item has-text-dark">Carte postale</router-link>
-					<div class="buttons">
-						<template v-if="$store.state.isAuthenticated">
-							<router-link to="/my-account" class="navbar-item has-text-dark">
-								<span class="icon"><i class="fas fa-user"></i></span>
-								<span>Mon espace</span>
-							</router-link>
-						</template>
-						<template v-else>
-							<router-link to="/login" class="navbar-item has-text-dark">
-								<span class="icon"><i class="fas fa-user"></i></span>
-								<span>Se connecter</span>
-							</router-link>
-						</template>
-						<router-link to="/cart" class="navbar-item has-text-dark">
-							<span class="icon"><i class="fas fa-shopping-cart"></i></span>
-							<span>Panier {{ cartTotalLength }}</span>
+					<router-link to="/a4" class="navbar-item">Format A4</router-link>
+					<router-link to="/a3" class="navbar-item">Format A3</router-link>
+					<router-link to="/cp" class="navbar-item">Carte postale</router-link>
+					<template v-if="$store.state.isAuthenticated">
+						<router-link to="/my-account" class="navbar-item">
+							<span class="icon"><i class="fas fa-user"></i></span>
+							<span>Mon espace</span>
 						</router-link>
-					</div>
+					</template>
+					<template v-else>
+						<router-link to="/login" class="navbar-item">
+							<span class="icon"><i class="fas fa-user"></i></span>
+							<span>Se connecter</span>
+						</router-link>
+					</template>
+					<router-link to="/cart" class="navbar-item">
+						<span class="icon"><i class="fas fa-shopping-cart"></i></span>
+						<span>Panier {{ cartTotalLength }}</span>
+					</router-link>
 				</div>
 			</div>
 		</nav>
@@ -69,32 +68,36 @@
 </template>
 
 <script>
-import axios from 'axios';
-
 export default {
 	name: 'App',
 	data() {
 		return {
 			showMobileMenu: false,
-			cart: {
-				items: [],
-			}
 		}
 	},
 	mounted() {
 		this.$store.commit('initializeStore');
-		this.cart = this.$store.state.cart;
+
+		document.addEventListener('click', this.handleClickOutside);
+	},
+	beforeUnmount() {
+		document.removeEventListener('click', this.handleClickOutside);
+	},
+	methods: {
+		handleClickOutside(event) {
+			if (this.showMobileMenu && this.$refs.navbarMenu && !this.$refs.navbarMenu.contains(event.target) && !event.target.closest('.navbar-burger')) {
+				this.showMobileMenu = false;
+			}
+		}
 	},
 	computed: {
 		cartTotalLength() {
 			let totalLength = 0;
 
-			for (let i = 0; i < this.cart.items.length; i++) {
-				totalLength += this.cart.items[i].quantity;
-			}
-			if (totalLength > 0) {
-				return `(${totalLength})`;
-			}
+			for (let item of this.$store.state.cart.items) {
+            totalLength += item.quantity;
+        	}
+        	return totalLength > 0 ? `(${totalLength})` : "";
 		}
 	}
 };

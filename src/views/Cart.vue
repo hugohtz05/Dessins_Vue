@@ -19,7 +19,7 @@
                     <tbody>
                         <CartItem
                             v-for="item in cart.items"
-                            v-bind:key="item.product_name"
+                            v-bind:key="item.product.id"
                             v-bind:initialItem="item"
                             v-on:removeFromCart="removeFromCart" />
                     </tbody>
@@ -70,7 +70,6 @@ export default {
             if (!this.cart.items.length) {
                 return;
             }
-
             this.loading = true;
 
             try {
@@ -80,17 +79,22 @@ export default {
                         quantity: item.quantity
                     }))
                 };
-                await axios
-                .post('/orders/', orderData)
-                .then(response =>
-                    localStorage.setItem('order_id', response.data.order_id)
-                )
 
+                const pendingOrder = await axios.get("/orders/check_pending_order/");
+
+                let orderId = pendingOrder.data.order_id;
+
+                if (orderId) {
+                    await axios.put(`/orders/${orderId}/`, orderData);
+                } else {
+                    const response = await axios.post('/orders/', orderData)
+                    orderId = response.data.order_id
+                }
+                localStorage.setItem('order_id', orderId);
+                this.loading = false;
                 this.$router.push('/checkout');
             } catch (error) {
                 alert("Une erreur est survenue. Veuillez réessayer");
-            } finally {
-                this.loading = false;
             }
         }
     },

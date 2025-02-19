@@ -14,9 +14,11 @@
                 <h2 class="subtitle">Mes commandes</h2>
 
                 <OrderSummary
+                    v-if="orders.length"
                     v-for="order in orders"
                     v-bind:key="order.order_id"
                     v-bind:order="order" />
+                <p v-else>Aucune commande</p>
             </div>
         </div>
     </div>
@@ -54,7 +56,7 @@ export default {
                 .get('/orders/')
                 .then(response => {
                     this.orders = response.data
-                    console.log(response.data)
+                    console.log(this.orders)
                 })
             this.$store.commit('setIsLoading', false);
         }

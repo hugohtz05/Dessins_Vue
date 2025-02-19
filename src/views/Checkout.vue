@@ -1,247 +1,159 @@
 <template>
-    <div class="page-checkout">
-        <div class="columns is-multiline">
-            <div class="column is-12">
-                <h1 class="title">Finaliser ma commande</h1>
+    <div class="checkout-page">
+        <h1>Paiement de la commande</h1>
+        <div v-if="loading">Chargement du paiement...</div>
+  
+        <form v-else @submit.prevent="handlePayment">
+            <div id="payment-element" class="mb-5"></div>
+
+            <div class="field">
+                <label class="label">Nom complet</label>
+                <input v-model="shipping.name" class="input" type="text" required>
+            </div>
+            
+            <div class="field">
+                <label class="label">Téléphone</label>
+                <input v-model="shipping.phone" class="input" type="tel" required>
             </div>
 
-            <div class="column is-12 box">
-                <table class="table is-fullwidth">
-                    <thead>
-                        <tr>
-                            <th>Produit</th>
-                            <th>Prix</th>
-                            <th>Quantité</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr
-                        v-for="item in cart.items"
-                        v-bind:key="item.product.id"
-                        >
-                            <td>{{ item.product.name }}</td>
-                            <td>{{ item.product.price }}€</td>
-                            <td>{{ item.quantity }}</td>
-                            <td>{{ getItemTotal(item).toFixed(2) }}€</td>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="2">Total</td>
-                            <td>{{ cartTotalLength }}</td>
-                            <td>{{ cartTotalPrice.toFixed(2) }}€</td>
-                        </tr>
-                    </tfoot>
-                </table>
+            <div class="field">
+                <label class="label">Addresse</label>
+                <input v-model="shipping.address" class="input" type="text" required>
             </div>
-            <div class="column is-12 box">
-                <h2 class="subtitle">Livraison</h2>
 
-                <p class="has-text-grey mb-4">Champs obligatoires *</p>
-                <div class="columns is-multiline">
-                    <div class="column is-6">
-                        <div class="field">
-                            <label>Prénom*</label>
-                            <div class="control">
-                                <input type="text" class="input has-background-white has-text-dark" v-model="first_name">
-                            </div>
-                        </div>
-                        <div class="field">
-                            <label>Nom*</label>
-                            <div class="control">
-                                <input type="text" class="input has-background-white has-text-dark" v-model="last_name">
-                            </div>
-                        </div>
-                        <div class="field">
-                            <label>E-mail*</label>
-                            <div class="control">
-                                <input type="email" class="input has-background-white has-text-dark" v-model="email">
-                            </div>
-                        </div>
-                        <div class="field">
-                            <label>Numéro de téléphone*</label>
-                            <div class="control">
-                                <input type="text" class="input has-background-white has-text-dark" v-model="phone">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="column is-6">
-                        <div class="field">
-                            <label>Addresse*</label>
-                            <div class="control">
-                                <input type="text" class="input has-background-white has-text-dark" v-model="address">
-                            </div>
-                        </div>
+            <div class="field">
+                <label class="label">Code Postal</label>
+                <input v-model="shipping.postal_code" class="input" type="text" required>
+            </div>
 
-                        <div class="field">
-                            <label>Code postal*</label>
-                            <div class="control">
-                                <input type="text" class="input has-background-white has-text-dark" v-model="zipcode">
-                            </div>
-                        </div>
-                        <div class="field">
-                            <label>Ville*</label>
-                            <div class="control">
-                                <input type="text" class="input has-background-white has-text-dark" v-model="place">
-                            </div>
-                        </div>
-                    </div>
+            <div class="field">
+                <label class="label">Ville</label>
+                <input v-model="shipping.city" class="input" type="text" required>
+            </div>
+
+            <div class="field">
+                <label class="label">Pays</label>
+                <div class="select">
+                    <select v-model="shipping.country" required>
+                        <option value="FR">FRANCE</option>
+                        <option value="BE">BELGIQUE</option>
+                    </select>
                 </div>
-
-                <div class="notification is-danger mt-4" v-if="errors.length">
-                    <p v-for="error in errors" v-bind:key="error">{{ error }}</p>
-                </div>
-
-                <hr>
-
-                <div id="card-element" class="mb-5"></div>
-
-                <template v-if="cartTotalLength">
-                    <hr>
-
-                    <button class="button is-white" @click="submitForm">Payer avec Stripe</button>
-                    <router-link to='/success' v-if="submitForm"></router-link>
-                </template>
             </div>
-        </div>
+            <button class="button is-dark" type="submit" :disabled="processing">
+                {{ processing ? "Paiement en cours..." : "Payer" }}
+            </button>
+        </form>
+  
     </div>
 </template>
-
+  
 <script>
-import axios from 'axios';
-
+import axios from "axios";
+import { loadStripe } from "@stripe/stripe-js";
+import { toast } from "bulma-toast";
+    
 export default {
     name: 'Checkout',
     data() {
         return {
-            cart: {
-                items: [],
-            },
-            stipe: {},
-            card: {},
-            first_name: '',
-            last_name: '',
-            email: '',
-            phone: '',
-            address: '',
-            zipcode: '',
-            place: '',
-            errors: []
+            stripe: null,
+            elements: null,
+            orderId: localStorage.getItem("order_id"),
+            loading: true,
+            clientSecret: "",
+            processing: false,
+            shipping: {
+                name: "",
+                phone: "",
+                address: "",
+                postal_code: "",
+                city: "",
+                country: "",
+            }
         };
     },
-    mounted() {
-        document.title = "Commande | Dessins d'ici et d'ailleurs";
+    async mounted() {
+        document.title = "Paiement | Dessins d'ici et d'ailleurs";
 
-        this.cart = this.$store.state.cart;
+        this.stripe = await loadStripe("pk_test_51Qk5MpBIhNeDc8rcwWsD9Ik19xO3wWFGxw6fecloMVLjq3BD14YvRGOHx67ZcuE4KTDzKsMbGh0H0oAZkNwS36CI00rdoGzGQN");
 
-        if (this.cartTotalLength > 0) {
-            this.stripe = Stripe();
-            const elements = this.stripe.elements();
-            this.card = elements.create('card', { hidePostalCode: true});
+        try {
+            await axios
+                .post(`/orders/${this.orderId}/create_payment/`)
+                .then(response => {
+                    this.clientSecret = response.data.client_secret
+                });
+            
+            const clientSecret = this.clientSecret
+            this.loading = false;
 
-            this.card.mount('#card-element');
+            this.$nextTick(() => {
+                const appearance = { theme: "stripe" };
+                this.elements = this.stripe.elements({ appearance, clientSecret });
+                const paymentElementOptions = { layout: "accordion" };
+                const cardElement = this.elements.create("payment", paymentElementOptions);
+                cardElement.mount("#payment-element");
+            })
+
+        } catch(error) {
+            toast({
+                message: "Une erreur est survenue lors du paiment. Veuillez essayer une nouvelle fois",
+                type: 'is-danger',
+                dismissible: true,
+                pauseOnHover: true,
+                duration: 2000,
+                position: 'bottom-right',
+            });
         }
     },
     methods: {
-        getItemTotal(item) {
-            return item.quantity * item.product.price;
-        },
-        submitForm() {
-            this.errors = [];
+        async handlePayment() {
+            this.processing = true;
 
-            if (this.first_name === '') {
-                this.errors.push("Vous n'avez pas renseigné votre prénom");
+            if (Object.values(this.shipping).some(value => !value)) {
+                toast({
+                    message: "Veuillez remplir toutes les informations de livraison.",
+                    type: 'is-warning',
+                    dismissible: true,
+                    pauseOnHover: true,
+                    duration: 3000,
+                    position: 'bottom-right',
+                });
+                this.processing = false;
+                return;
             }
 
-            if (this.last_name === '') {
-                this.errors.push("Vous n'avez pas renseigné votre nom");
-            }
-
-            if (!/\S+@\S+\.\S+/.test(this.email)) {
-                this.errors.push("Vous n'avez pas renseigné un mail valide");
-            }
-
-            if ( isNaN(Number(this.phone)) || this.phone.length != 10 ) {
-                this.errors.push("Vous n'avez pas renseigné numéro de téléphone valide");
-            }
-
-            if (this.address === '') {
-                this.errors.push("Vous n'avez pas renseigné votre adresse");
-            }
-
-            if (this.zipcode === '') {
-                this.errors.push("Vous n'avez pas renseigné votre code postal");
-            }
-
-            if (this.place === '') {
-                this.errors.push("Vous n'avez pas renseigné votre ville");
-            }
-
-            if (this.errors.length) {
-                this.$store.commit('setIsLoading', true);
-
-                this.stripe.createToken(this.card).then(result => {
-                    if (result.error) {
-                        this.$store.commit('setIsLoading', false);
-
-                        this.errors.push('Une erreur est survenue. Veuillez réessayer');
-                    } else {
-                        this.stripeTokenHandler(result.token);
+            try {
+                const { error, paymentIntent } = await this.stripe.confirmPayment({
+                    elements: this.elements,
+                    confirmParams: {
+                        shipping: {
+                            name: this.shipping.name,
+                            phone: this.shipping.phone,
+                            address: {
+                                line1: this.shipping.address,
+                                postal_code: this.shipping.postal_code,
+                                city: this.shipping.city,
+                                country: this.shipping.country,
+                            }
+                        },
+                        return_url: window.location.origin + "/order/success"
                     }
-                })
+                });
+
+                if (error.type === 'card_error' || error.type === 'validation_error') {
+                    localStorage.setItem('payment_error', error.message);
+                    this.$router.push("/order/failure");
+                }
+            } catch (error) {
+                localStorage.setItem('payment_error', "Une erreur inattendue s'est produite.");
+                    this.$router.push("/order/failure");
+            } finally {
+                this.processing = false;
             }
-        },
-        async stripeTokenHandler(token) {
-            const items = [];
-
-            for (let i = 0; i < this.cart.items.length; i++) {
-                const item = this.cart.items[i];
-                const obj = {
-                    product: item.product.id,
-                    quantity: item.quantity,
-                    price: item.product.price * item.quantity
-                };
-
-                items.push(obj);
-            }
-
-            const data = {
-                'first_name': this.first_name,
-                'last_name': this.last_name,
-                'email': this.email,
-                'address': this.address,
-                'zipcode': this.zipcode,
-                'place': this.place,
-                'phone': this.phone,
-                'items': items,
-                'stripe_token': token.id
-            };
-
-            await axios
-                .post('api/v1/checkout/', data)
-                .then(response => {
-                    this.$store.commit('clearCart')
-                    this.$store.push('/cart/success')
-                })
-                .catch(errors => {
-                    this.errors.push('Une erreur est survenue. Veuillez réessayer')
-                })
-
-                this.$store.commit('setIsLoading', false)
-        }
+        },  
     },
-    computed: {
-        cartTotalPrice() {
-            return this.cart.items.reduce((acc, curVal) => {
-                return acc += curVal.product.price * curVal.quantity
-            }, 0);
-        },
-        cartTotalLength() {
-            return this.cart.items.reduce((acc, curVal) => {
-                return acc += curVal.quantity
-            }, 0);
-        }
-    }
 };
 </script>
+    

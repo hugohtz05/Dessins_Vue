@@ -11,10 +11,22 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
     name: 'Success',
-    mounted() {
-        document.title = "Validation | Dessins d'ici et d'ailleurs"
+    async mounted() {
+        document.title = "Validation | Dessins d'ici et d'ailleurs";
+        localStorage.removeItem('order_id');
+        this.$store.commit('clearCart');
+
+        try {
+            await axios.get("/restaure_cookies/")
+            this.$store.commit('setIsAuthenticated', true);
+        } catch(error) {
+            alert("Payement réussi!");
+            this.$store.commit('setIsAuthenticated', false);
+        }
     },
 }
 </script>

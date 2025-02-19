@@ -1,7 +1,7 @@
 <template>
     <div class="box mb-4">
         <h3 class="is-size-4 mb-6">Commande #{{ order.order_id }}</h3>
-        <h4 class="is-size-5">Produits</h4>
+        <h4 class="is-size-5">{{ order.status }}</h4>
 
         <table class="table is-fullwidth">
             <thead>
@@ -16,14 +16,23 @@
             <tbody>
                 <tr
                     v-for="item in order.items"
-                    v-bind:key="item.product.id"
+                    v-bind:key="item.product"
                 >
-                    <td>{{ item.product.name }}</td>
-                    <td>{{ item.product.price }}</td>
+                    <td>{{ item.product_name }}</td>
+                    <td>{{ item.product_price }}€</td>
                     <td>{{ item.quantity }}</td>
-                    <td>{{ getItemTotal(item).toFixed(2) }}</td>
+                    <td>{{ item.item_subtotal }}€</td>
                 </tr>
             </tbody>
+
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>{{ order.total_price }}€</td>
+                </tr>
+            </tfoot>
         </table>
     </div>
 </template>
@@ -34,15 +43,5 @@ export default {
     props: {
         order: Object
     },
-    methods: {
-        getItemTotal(item) {
-            return item.quantity * item.product.price;
-        },
-        orderTotalLength(order) {
-            return order.items.reduce((acc, curVal) => {
-                return acc += curVal.quantity
-            }, 0)
-        },
-    }
 };
 </script>
