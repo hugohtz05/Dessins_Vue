@@ -4,7 +4,7 @@
             <div class="column is-12">
                 <h1 class="title">Merci !</h1>
 
-                <p>Votre commande va être traitée dans les 48 heures à venir. :)</p>
+                <p>Votre commande va être traitée dans les 48 heures à venir. :</p>
             </div>
         </div>
     </div>
